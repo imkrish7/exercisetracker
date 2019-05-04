@@ -1,0 +1,10 @@
+
+.addexcercise   
+            h1 Add Excercise
+            p.postapi POST /api/exercise/add
+            form(action="/api/exercise/add" method="POST")
+                input.userfill(placeholder="userId*" type="text" name="userid")
+                input.userfill(placeholder="description*" type="text" name="description")
+                input.userfill(placeholder="duration*" type="text" name="duraion")
+                input.userfill(placeholder="date (yyyy-mm-dd)*" type="text" name="date")
+                button.createsub(type="submit" value="Submit") Submit

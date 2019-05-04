@@ -1,0 +1,16 @@
+
+.userinfo
+        h1.head Excercise Tracker
+        div.createuser 
+                h2 Create New User
+                p.postapi POST /api/exercise/new-user
+                form(action ="api/exercise/new-user" method="POST")
+                    input.userfill(placeholder="Enter user name" type="text" name="username")
+                    br
+                    button.createsub(type="submit") Submit
+        - const str= '<span>GET /api/exercise/log?{userId}[&from][&to][&limit]</span>'
+        - const bracket = '<strong>[ ]</strong>';
+        .userusage
+                p GET users's exercise log: !{ str }
+                p #[strong { }] = required,  !{ bracket } = optional
+                p #[strong from, to] = dates (yyyy-mm-dd) #[strong limit] = number            

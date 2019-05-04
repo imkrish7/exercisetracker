@@ -1,0 +1,103 @@
+*{
+  box-sizing: border-box;
+}
+body {
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  background:#dedcdb6e;
+}
+.head{
+  margin-top:10px;      
+  font-size: 45px;
+  text-align: center;
+  color:#ff9955;
+  padding: 0;
+}
+
+.form {
+  width:900px;
+  display: grid;
+  grid-template-columns: 450px 450px;
+  margin:auto;
+ 
+}
+
+.addexcercise,.createuser{
+  background:#ff9955;
+  color:#fff;
+  height: 320px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.createuser{
+  margin-top:15px;
+  width:100%;
+}
+
+.userinfo{
+ grid-column: 1;
+ width:400px; 
+ margin:15px;
+}
+.addexcercise{
+  grid-column: 2;
+  width:400px;
+  height: 550px;
+  margin:20px;
+}
+
+
+.addexcercise h1,.createuser h2{
+  font-size: 35px;
+  margin-left:20px;
+}
+.userusage{
+  margin-top:20px;
+}
+.userusage p{
+  font-size: 18px;
+}
+
+.userusage p span{
+  background:#fff;  
+  color:#ff6600;
+}
+
+ .postapi{
+  background:#fff;
+  color:#ff6600;
+  width:250px;
+  margin-left:20px;
+  font-size: 18px;
+}
+ .userfill{
+  height:40px;
+  margin:20px;
+  border:none;
+  width:300px;
+  line-height: 40px;
+  border-radius: 5px;
+}
+::placeholder{
+  font-size: 20px;
+}
+ .userfill[type=text]{
+  font-size:20px;
+  color:#7f7d7c;
+  padding:5px;
+}
+
+ .createsub{
+   text-align: center;
+  padding:10px;
+  width:130px;
+  font-size: 20px;
+  background:#fff;
+  color:#ff6600;
+  border:none;
+  margin:20px;
+}
+a {
+  color: #00B7FF;
+}
