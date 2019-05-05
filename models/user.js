@@ -3,11 +3,16 @@ const mongodb = require('mongodb');
 const mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-var user = new Schema({
-    name:String,
+var exercise = new Schema({
     description:String,
     duration:String,
-    date:Date
+    date:{type:Date,default:Date.now()}
+})
+
+
+var user = new Schema({
+    name:String,
+    exercise:[exercise]
 })
 
 
