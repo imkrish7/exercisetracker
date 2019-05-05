@@ -12,8 +12,8 @@ var usersRouter = require('./routes/users');
 
 var app = express();
 
-mongoose.connect('mongodb+srv://kamal:<password>@learning-oxyrk.mongodb.net/test?retryWrites=true', {
-  useNewUrlParse: true
+mongoose.connect('mongodb+srv://kamal:kamal123@learning-oxyrk.mongodb.net/test?retryWrites=true', {
+  useNewUrlParser: true
 });
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -34,26 +34,155 @@ app.use('/', indexRouter);
 var user = require('./models/user.js')
 
 indexRouter.post('/api/exercise/new-user', (req, res) => {
-  var newuser = new user({
-    name:req.body.username
-  })
 
-  newuser.save((error)=>{
-    if (error)
-       res.send(error);
+  user.findOne({name:req.body.username},(error,data)=>{
+
+    if(error)
+      res.send(error)
+
+
+      if(data==null){
+        var newuser = new user({
+          name: req.body.username
+
+        })
+        newuser.save((error) => {
+          if (error)
+            res.send(error);
+        })
+        res.send({
+          newuser
+        });
+      }
+      else{
+        res.send("user already exist")
+      }
   })
-  res.send({
-   newuser
-  });
+ 
+
+ 
+ 
 
 })
 
 indexRouter.post('/api/exercise/add',(req,res)=>{
+
+  // if(user.findOne({name:req.body.userid})===null){
   user.findOne({name:req.body.userid},(error,data)=>{
     if(error)
        res.send(error);
+
+       if(data!=null){
+       const newData = {
+         description:req.body.description,
+         duration:req.body.duration,
+         date:req.body.date
+       }
+       data.exercise.push(newData);
+
+       data.save(error=>{
+         if (error)
+            res.send(error);
+       })
+   
+      res.send(data);
+      }
+      else{
+         res.send("unknown_id");
+      }
   })
 })
+
+indexRouter.get('/api/exercise/log',(req,res)=>{
+  const name = req.query.userId;
+  const from = req.query.from | " ";
+  const to = req.query.to | " ";
+  const limit = +req.query.limit | " ";
+  
+  // if(user.findOne({ name:name })!==null){
+    user.findOne({ name: name }, (error, data) => {
+      if (error)
+        res.send(error);
+     
+      var response = [];
+
+      if(data!=null){
+      if (from != " " && to != " " && limit > 0) {
+       
+        response=data.exercise.filter((d,i)=>{
+          if(d.date>= new Date(from) && d.date<= new Date(to) && i< limit){
+            return d;
+          }
+        })
+
+      }
+      else if (from != " " && to == " " && limit > 0) {
+        
+        response = data.exercise.filter((d, i) => {
+          if (d.date >= new Date(from) && i < limit) {
+            return d;
+          }
+        })
+      }
+      else if (from != " " && to != " " && limit === 0) {
+       
+        response = data.exercise.filter((d, i) => {
+          if (d.date >= new Date(from) && d.date <= new Date(to) ) {
+            return d;
+          }
+        })
+      }
+      else if (from != " " && to == " " && limit === 0) {
+        
+        response = data.exercise.filter((d, i) => {
+          if (d.date >= new Date(from)) {
+            return d;
+          }
+        })
+      }
+      else if (from == " " && to == " " && limit === 0) {
+      
+        response = data.exercise.filter((d) => {
+          
+            return d;
+          
+        })
+      }
+      else if (from ==" " && to != " " && limit > 0) {
+        
+        response = data.exercise.filter((d, i) => {
+          if (d.date <= new Date(to) && i < limit) {
+            return d;
+          }
+        })
+      }
+      else if (from == " " && to != " " && limit === 0) {
+        
+        response = data.exercise.filter((d, i) => {
+          if (d.date <= new Date(to) ) {
+            return d;
+          }
+        })
+      }
+      else if (from == " " && to == " " && limit > 0) {
+        
+        response = data.exercise.filter((d, i) => {
+          if ( i < limit) {
+            return d;
+          }
+        })
+      }  
+
+      res.send({ name:data["name"],exercise:response });
+    }
+      else {
+        res.send("unlnown_id");
+      }
+    })
+    
+    
+  })
+
 app.use(function(req, res, next) {
   next(createError(404));
 });
