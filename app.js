@@ -36,19 +36,14 @@ var user = require('./models/user.js')
 indexRouter.post('/api/exercise/new-user', (req, res) => {
 
   user.findOne({name:req.body.username},(error,data)=>{
-
-    if(error)
-      res.send(error)
-
-
-      if(data==null){
+        if(data==null){
         var newuser = new user({
           name: req.body.username
 
         })
         newuser.save((error) => {
           if (error)
-            res.send(error);
+            return error;
         })
         res.send({
           newuser
@@ -57,69 +52,72 @@ indexRouter.post('/api/exercise/new-user', (req, res) => {
       else{
         res.send("user already exist")
       }
-  })
- 
-
- 
- 
+  }).catch(error=>res.json(error))
 
 })
 
 indexRouter.post('/api/exercise/add',(req,res)=>{
 
-  // if(user.findOne({name:req.body.userid})===null){
   user.findOne({name:req.body.userid},(error,data)=>{
-    if(error)
-       res.send(error);
 
        if(data!=null){
-       const newData = {
+       var newData = {
          description:req.body.description,
          duration:req.body.duration,
-         date:req.body.date
+         date:new Date(req.body.date.toString())
        }
+       console.log( new Date(req.body.date.toString()))
        data.exercise.push(newData);
 
-       data.save(error=>{
-         if (error)
-            res.send(error);
+       data.save((error)=>{
+         if (error){
+            return res.send(error);
+         }  
+         return res.send(newData);
        })
-   
-      res.send(data);
       }
       else{
-         res.send("unknown_id");
+           return res.send("unknown_id");
       }
-  })
+  })    
 })
 
 indexRouter.get('/api/exercise/log',(req,res)=>{
   const name = req.query.userId;
-  const from = req.query.from | " ";
-  const to = req.query.to | " ";
-  const limit = +req.query.limit | " ";
+  var from = " ";
+  var to = " ";
+  var temp=0; 
+  if(req.query.from!==undefined){
+      from = new Date(req.query.from.toString());
+  }
+  if(req.query.to!==undefined){
+to = new Date(req.query.to.toString())
+  }
   
-  // if(user.findOne({ name:name })!==null){
-    user.findOne({ name: name }, (error, data) => {
-      if (error)
-        res.send(error);
-     
+  var limit = +req.query.limit | " ";
+  
+  
+    user.findOne({ name: name }, (error, data) => {     
       var response = [];
 
       if(data!=null){
       if (from != " " && to != " " && limit > 0) {
-       
-        response=data.exercise.filter((d,i)=>{
-          if(d.date>= new Date(from) && d.date<= new Date(to) && i< limit){
+        temp=limit;
+        response=data.exercise.filter((d)=>{
+          // console.log(d,i,limit);
+          if(d.date>= from && d.date <= to && 0< temp){
+            // console.log("222");
+            temp = --temp;
             return d;
           }
         })
 
       }
       else if (from != " " && to == " " && limit > 0) {
-        
+        temp = limit;
         response = data.exercise.filter((d, i) => {
-          if (d.date >= new Date(from) && i < limit) {
+          if (d.date >= new Date(from) && 0 < temp) {
+            temp = --temp;
             return d;
           }
         })
@@ -149,9 +147,10 @@ indexRouter.get('/api/exercise/log',(req,res)=>{
         })
       }
       else if (from ==" " && to != " " && limit > 0) {
-        
+        temp = limit;
         response = data.exercise.filter((d, i) => {
-          if (d.date <= new Date(to) && i < limit) {
+          if (d.date <= new Date(to) && 0 < temp) {
+            temp = --temp;
             return d;
           }
         })
@@ -165,20 +164,21 @@ indexRouter.get('/api/exercise/log',(req,res)=>{
         })
       }
       else if (from == " " && to == " " && limit > 0) {
-        
+        temp = limit;
         response = data.exercise.filter((d, i) => {
-          if ( i < limit) {
+          if ( 0 < temp) {
+            temp = --temp;
             return d;
           }
         })
       }  
 
-      res.send({ name:data["name"],exercise:response });
+       res.send({ name:data["name"],exercise:response });
     }
       else {
-        res.send("unlnown_id");
+         res.send("unlnown_id");
       }
-    })
+    }).catch(error=>res.json(error))
     
     
   })
